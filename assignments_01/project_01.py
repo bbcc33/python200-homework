@@ -1,10 +1,10 @@
-from prefect inmport flow, task, get_run_logger
+from prefect import flow, task, get_run_logger
 import pandas as pd
 import numpy as np
-import matplotilb.pyplot as plt
+import matplotlib.pyplot as plt
 import seaborn as sns
-import scipy.stats import ttest_ind, pearsonr
-import pathlib import Path 
+from scipy.stats import ttest_ind, pearsonr
+from pathlib import Path 
 import re 
 
 DATA_DIR = Path("assignments/resources/happiness_project")
@@ -64,7 +64,7 @@ def descriptive_statistics(df):
     logger.info(f"Overall Median Score: {median:.3f}")
     logger.info(f"Overall Std Dev: {std:.3f}")
 
-    by_year = df.groupby("year"["score"]).mean()
+    by_year = df.groupby("year")["score"].mean()
     by_region = df.grouby("region")["score"].mean()
 
     logger.info("Mean Score by Year:\n" + by_year.to_string())
