@@ -7,13 +7,14 @@ from scipy.stats import ttest_ind, pearsonr
 from pathlib import Path 
 import re 
 
-DATA_DIR = Path("assignments/resources/happiness_project")
-OUTPUT_DIR = Path("assignments_01/outputs")
+# DATA_DIR = Path("../assignments_01/resources/happiness_project/happiness_project")
+DATA_DIR = Path("resources/happiness_project")
+OUTPUT_DIR = Path("../assignments_01/outputs")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Task 1: Load Multiple Years of Data
 
-def standardize_column_names(df):
+def standardize_columns(df):
     df.columns = [c.lower().strip().replace(" ", "_") for c in df.columns]
 
     rename_map = {
@@ -29,7 +30,7 @@ def standardize_column_names(df):
 
 
 @task(retries=3, retry_delay_seconds=2)
-def load_and_clean_data(file_path):
+def load_and_clean_data():
     logger = get_run_logger()
 
     all_files = sorted(DATA_DIR.glob("world_happiness_*.csv"))
@@ -40,16 +41,16 @@ def load_and_clean_data(file_path):
 
         logger.info(f"Loading {file.name} for year {year}")
 
-        df = pd.read_csv(file, sep=",", decimal=",")
+        df = pd.read_csv(file, sep=None, engine="python")
         df = standardize_columns(df)
+        df["score"] = pd.to_numeric(df["score"], errors="coerce")
         df["year"] = int(year)
         dfs.append(df)
 
-        merged = pd.concat(dfs, ignore_index=True)
-        merged.to_csv(OUTPUT_DIR / "cleaned_happiness_data.csv", index=False)
-
-        logger.info("Meged dataset saved to outputs/merged_happiness_data.csv")
-        return merged
+    merged = pd.concat(dfs, ignore_index=True)
+    merged.to_csv(OUTPUT_DIR / "cleaned_happiness_data.csv", index=False)
+    logger.info("Merged dataset saved to outputs/merged_happiness_data.csv")
+    return merged
 
 # Task 2: Descriptive Statistics
 @task
@@ -65,7 +66,7 @@ def descriptive_statistics(df):
     logger.info(f"Overall Std Dev: {std:.3f}")
 
     by_year = df.groupby("year")["score"].mean()
-    by_region = df.grouby("region")["score"].mean()
+    by_region = df.groupby("region")["score"].mean()
 
     logger.info("Mean Score by Year:\n" + by_year.to_string())
     logger.info("Mean Score by Region:\n" + by_region.to_string())
@@ -87,8 +88,8 @@ def create_visualizations(df):
     plt.figure(figsize=(10, 8))
     numeric_df = df.select_dtypes(include=[np.number])
     sns.heatmap(numeric_df.corr(), annot=True)
-    plt.savefig(OUTPUT_DIR / "happiness_scores_by_region.png")
-    logger.info("Saved happiness_scores_by_region.png")
+    plt.savefig(OUTPUT_DIR / "correlation_heatmap.png")
+    logger.info("Saved correlation_heatmap.png")
     plt.close()
 
 # Task 4: Hypothesis Testing
@@ -163,8 +164,8 @@ def summary_report(df, by_region):
 
 @flow
 def happiness_pipeline():
-    df = load_and_merge_data()
-    by_region = descriptive_statistics(df)
+    df = load_and_clean_data()
+    by_region, by_year = descriptive_statistics(df)
     create_visualizations(df)
     hypothesis_testing(df)
     correlation_tests(df)

@@ -1,5 +1,5 @@
-import prefect
-import task, flow
+# import prefect
+from prefect import get_run_logger, task, flow
 import pandas as pd
 import numpy as np
 
@@ -27,7 +27,8 @@ def pipeline_flow():
     summary = summarize_data(c)
 
     for k, v in summary.items():
-        print(f"{k}: {v}")
+        get_run_logger()
+        # (f"{k}: {v}")
 
     return summary
 
