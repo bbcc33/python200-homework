@@ -1,5 +1,6 @@
 # --- Pandas ---
 import pandas as pd
+import matplotlib.pyplot as plt
 
 data = {
     "name":   ["Alice", "Bob", "Carol", "David", "Eve"],
@@ -18,12 +19,12 @@ print("\nData Types:")
 print(df.dtypes)
 
 # Pandas Q2
-filtered_df = df[df["passed"] == True] & (df["grade"] > 80)
+filtered_df = df[(df["passed"] == True) & (df["grade"] > 80)]
 print("\nStudents who passed and have grade > 80:")
 print(filtered_df[["name", "grade"]])
 
 # Pandas Q3
-df["grade _curved"] = df["grade"] + 5
+df["grade_curved"] = df["grade"] + 5
 print("\nDataFrame with curved grades:")
 print(df)
 
@@ -74,7 +75,7 @@ print("\n2x5 array of ones:")
 print(ones_array)
 
 # NumPy Q5
-arr3 = np.arrange(0, 50, 5)
+arr3 = np.arange(0, 50, 5)
 print(f"Array: {arr3}")
 print(f"Shape: {arr3.shape}")
 print(f"Mean: {arr3.mean()}")
@@ -82,7 +83,7 @@ print(f"Sum: {arr3.sum()}")
 print(f"Standard Deviation: {arr3.std()}")
 
 # NumPy Q6
-random_arr = np.random.nomral(0, 1, 200)
+random_arr = np.random.normal(0, 1, 200)
 print(f"Mean of random array: {random_arr.mean()}")
 print(f"Standard Deviation of random array: {random_arr.std()}")
 
@@ -159,7 +160,6 @@ plt.title("Score Comparison")
 plt.show()
 
 # Descriptive Stats Q4
-import matplotlib.pyplot as plt
 
 normal_data = np.random.normal(50, 5, 200)
 skewed_data = np.random.exponential(10, 200)
@@ -193,7 +193,7 @@ print(f"T-statistic: {t_stat}, P-value: {p_value}")
 
 # Hypothesis Q2
 if p_value < 0.05:
-    print("Result is not statistically significant.")
+    print("Result is statistically significant.")
 
 # Hypothesis Q3
 before = [60, 65, 70, 58, 62, 67, 63, 66]
